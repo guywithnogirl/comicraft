@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ComicCraft - Export Complete</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            padding: 40px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #2e8b57;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 25px;
+            background: #6c4cff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .button:hover {
+            background: #5438d4;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>✅ Comic Exported Successfully!</h1>
+
+    <p>
+        Your comic has been successfully generated and exported as a PDF.
+    </p>
+
+    <a
+        class="button"
+        href="{{ pdf_path }}"
+        download
+    >
+        📄 Download PDF
+    </a>
+
+    <br>
+
+    <a
+        class="button"
+        href="/"
+    >
+        🎨 Create Another Comic
+    </a>
+
+</div>
+
+</body>
+</html>
