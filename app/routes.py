@@ -9,6 +9,7 @@ from app.gemini_pro import generate_story
 from app.image_generator import generate_image
 from app.layout_builder import build_comic_layout
 from app.exporters import save_pdf
+import os
 
 
 router = APIRouter()
@@ -65,7 +66,9 @@ async def generate_comic(
         # Step 5: Export comic to PDF
         pdf_path = save_pdf(layout)
 
-        web_pdf_path = "/" + pdf_path.replace("\\", "/")
+        filename = os.path.basename(pdf_path)
+
+        web_pdf_path = f"/static/exports/{filename}"
 
         return templates.TemplateResponse(
             request=request,

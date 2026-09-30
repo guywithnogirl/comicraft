@@ -12,16 +12,66 @@ FONT_PATH = os.path.join(
     "fonts"
 )
 
+# Unicode font
+REGULAR_FONT = os.path.join(
+    FONT_PATH,
+    "DejaVuSans.ttf"
+)
+
+BOLD_FONT = os.path.join(
+    FONT_PATH,
+    "DejaVuSans-Bold.ttf"
+)
+
 
 # Make sure the export directory exists
 os.makedirs(EXPORT_FOLDER, exist_ok=True)
+
+
+def sanitize_text(text: str) -> str:
+    """
+    Replace common Unicode characters that may cause PDF encoding issues.
+    """
+    replacements = {
+        "\u2014": "-",     # em dash
+        "\u2013": "-",     # en dash
+        "\u2018": "'",     # left single quote
+        "\u2019": "'",     # right single quote
+        "\u201c": '"',     # left double quote
+        "\u201d": '"',     # right double quote
+        "\u2026": "...",   # ellipsis
+    }
+
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    return text
 
 
 def save_pdf(layout):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
 
-    pdf.set_font("Helvetica", "", 12)
+    # Use Unicode font if available
+    if os.path.exists(REGULAR_FONT):
+        pdf.add_font(
+            "DejaVu",
+            "",
+            REGULAR_FONT
+        )
+
+        if os.path.exists(BOLD_FONT):
+            pdf.add_font(
+                "DejaVu",
+                "B",
+                BOLD_FONT
+            )
+
+        pdf.set_font("DejaVu", "", 12)
+
+    else:
+        # Fallback to Helvetica
+        pdf.set_font("Helvetica", "", 12)
 
     for panel in layout:
         image_path = panel["image_path"]
@@ -30,16 +80,23 @@ def save_pdf(layout):
         pdf.add_page()
 
         # Panel title
-        pdf.set_font("Helvetica", "", 14)
+        if os.path.exists(REGULAR_FONT):
+            pdf.set_font("DejaVu", "B", 14)
+        else:
+            pdf.set_font("Helvetica", "", 14)
+
         pdf.cell(
             0,
             10,
-            f"Panel {panel['panel']}",
+            sanitize_text(f"Panel {panel['panel']}"),
             ln=True,
             align="C"
         )
 
-        pdf.set_font("Helvetica", "", 12)
+        if os.path.exists(REGULAR_FONT):
+            pdf.set_font("DejaVu", "", 12)
+        else:
+            pdf.set_font("Helvetica", "", 12)
 
         # Image placement
         y_image = 30
@@ -60,7 +117,9 @@ def save_pdf(layout):
             pdf.multi_cell(
                 0,
                 10,
-                f"Image missing: {image_path}"
+                sanitize_text(
+                    f"Image missing: {image_path}"
+                )
             )
 
         # Text placement below image
@@ -70,18 +129,9 @@ def save_pdf(layout):
             spacing_after_image
         )
 
-        story_lines = story_text.strip().splitlines()
-
-        # Remove title line like **Panel 1: Title**
-        if (
-            story_lines
-            and story_lines[0].lower().startswith("**panel")
-        ):
-            story_lines = story_lines[1:]
-
-        cleaned_text = "\n".join(
-            story_lines
-        ).strip()
+        cleaned_text = sanitize_text(
+            story_text.strip()
+        )
 
         pdf.multi_cell(
             0,
