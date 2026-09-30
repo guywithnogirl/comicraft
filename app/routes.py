@@ -47,7 +47,7 @@ async def generate_comic(
             )
 
         # Step 2: Generate comic story using Gemini Pro
-        full_story = generate_story(outline)
+        story_panels = generate_story(outline)
 
         # Step 3: Generate images using Hugging Face
         images = [
@@ -58,7 +58,7 @@ async def generate_comic(
         # Step 4: Build comic layout
         layout = build_comic_layout(
             images,
-            full_story,
+            story_panels,
             outline
         )
 
